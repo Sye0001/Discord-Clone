@@ -1,26 +1,12 @@
 import { authMiddleware } from "@clerk/nextjs";
-import createMiddleware from "next-intl/middleware";
-
-const intlMiddleware = createMiddleware({
-  locales: ["en", "zh"],
-  defaultLocale: "en",
+ 
+// This example protects all routes including api/trpc routes
+// Please edit this to allow other routes to be public as needed.
+// See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your middleware
+export default authMiddleware({
+  publicRoutes: ["/api/uploadthing"]
 });
-
-export default function handler(req, res) {
-  // Apply intlMiddleware before authMiddleware
-  intlMiddleware(req, res, () => {
-    // Apply authMiddleware within intlMiddleware
-    authMiddleware({
-      beforeAuth: (req) => {
-        req.publicRoutes = ["/api/uploadthing"];
-        return req;
-      },
-    })(req, res);
-  });
-}
-
+ 
 export const config = {
-  api: {
-    bodyParser: false, // Disable body parsing, as it's handled by Clerk's middleware
-  },
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };
